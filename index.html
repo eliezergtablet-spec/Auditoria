@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auditoría Maestra - Catálogo Completo</title>
+    <title>Auditoría Pro - Conteo por Pisos y Unidades</title>
     
     <style>
         :root { 
@@ -20,330 +20,304 @@
         body { 
             font-family: system-ui, -apple-system, sans-serif; 
             background: var(--bg); color: var(--text);
-            margin: 0; padding: 10px; padding-bottom: 200px;
-            overscroll-behavior: none;
+            margin: 0; padding: 10px; padding-bottom: 240px;
         }
 
-        /* Cabecera Global */
         .global-header {
             background: linear-gradient(135deg, #1e40af, #1e293b);
-            border-radius: 24px; padding: 20px; margin-bottom: 15px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-            border: 1px solid #3b82f6;
+            border-radius: 20px; padding: 15px; margin-bottom: 15px;
+            border: 1px solid #3b82f6; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
-        .global-header h1 { font-size: 0.9rem; margin: 0 0 10px 0; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
-        .stats-row { display: flex; justify-content: space-between; align-items: flex-end; }
-        .stats-row b { font-size: 2.2rem; line-height: 1; }
-        .stats-row span { font-size: 0.7rem; font-weight: bold; opacity: 0.8; }
+        .stats-row { display: flex; justify-content: space-between; align-items: center; }
+        .stats-row b { font-size: 1.8rem; }
+        .stats-row span { font-size: 0.65rem; font-weight: bold; color: var(--slate); display: block; text-transform: uppercase; }
 
-        /* Grid de Rutas */
-        .route-grid {
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px;
-        }
+        .route-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 15px; }
         .route-btn {
             background: var(--card); border: 1px solid #334155; color: var(--slate);
-            padding: 12px 0; border-radius: 12px; font-weight: 800; cursor: pointer;
-            font-size: 0.85rem; transition: 0.2s;
+            padding: 10px 0; border-radius: 10px; font-weight: 800; font-size: 0.8rem; cursor: pointer;
         }
-        .route-btn.active { background: var(--primary); color: white; border-color: #60a5fa; transform: scale(1.05); }
+        .route-btn.active { background: var(--primary); color: white; border-color: #60a5fa; }
         .route-btn.has-data { border-color: var(--accent); color: var(--accent); border-style: dashed; }
 
-        /* Tarjeta Principal */
-        .main-card { background: var(--card); border-radius: 24px; padding: 18px; margin-bottom: 15px; border: 1px solid #334155; }
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        label { font-size: 0.7rem; color: var(--slate); font-weight: bold; margin-bottom: 5px; display: block; text-transform: uppercase; }
+        .main-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid #334155; }
+        .timer-box { font-family: monospace; color: var(--accent); background: #0f172a; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; display: inline-block; font-size: 0.85rem; border: 1px solid #475569; }
+
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        label { font-size: 0.65rem; color: var(--slate); font-weight: bold; margin-bottom: 3px; display: block; }
+        input[type="text"], input[type="number"] { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 10px; box-sizing: border-box; font-weight: bold; outline: none; }
+
+        .palette-container {
+            background: #111827; border-radius: 15px; padding: 12px; margin-bottom: 15px; border: 1px solid #334155;
+        }
+        .palette-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+        .palette-header b { color: var(--primary); font-size: 0.9rem; }
         
-        input, select { 
-            width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; 
-            color: white; border-radius: 12px; font-size: 1rem; font-weight: bold;
-            box-sizing: border-box; outline: none;
+        .layer-item {
+            background: #1e293b; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #334155;
         }
-        select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; background-size: 15px; appearance: none; }
-
-        /* Banner de Status de Ruta */
-        .status-banner {
-            display: flex; justify-content: space-around; background: #0f172a;
-            padding: 15px; border-radius: 18px; margin-bottom: 15px; border: 1px solid #334155;
-        }
-        .status-banner div { text-align: center; }
-        .status-banner b { font-size: 1.5rem; display: block; }
-
-        /* Lista de Paletas */
-        #palettesList { margin-top: 10px; }
-        .palette-item {
-            background: #111827; border-radius: 18px; padding: 16px; margin-bottom: 10px;
-            border: 2px solid transparent; transition: 0.2s;
-        }
-        .palette-item.selected { border-color: var(--primary); background: #1e293b; box-shadow: 0 0 15px rgba(37, 99, 235, 0.2); }
-        .palette-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .palette-header span { font-weight: 800; font-size: 0.9rem; }
+        .layer-controls-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 5px; align-items: center; }
         
-        .counter-box { display: flex; gap: 10px; align-items: center; }
-        .btn-mini { flex: 1; padding: 12px; border: none; border-radius: 10px; background: #334155; color: white; font-weight: bold; font-size: 1.1rem; }
-        .btn-mini:active { background: #475569; transform: scale(0.95); }
-        .val-input { width: 90px !important; text-align: center; font-size: 1.3rem !important; border-color: var(--primary) !important; }
+        select { background: #0f172a; color: white; border: 1px solid #475569; padding: 8px; border-radius: 8px; font-size: 0.8rem; width: 100%; }
+        
+        /* Visualización de la suma por pisos */
+        .floor-track {
+            background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px; 
+            font-weight: bold; font-size: 0.85rem; color: var(--text);
+            margin-bottom: 8px; display: flex; justify-content: space-between;
+            border-left: 4px solid var(--accent);
+        }
+        .floor-track span { color: var(--accent); }
 
-        /* Controles Inferiores */
+        .qty-controls { display: flex; gap: 5px; justify-content: space-between; margin-top: 8px; }
+        .btn-qty { flex: 1; padding: 10px 5px; border: none; border-radius: 8px; font-weight: bold; color: white; font-size: 0.7rem; cursor: pointer; transition: 0.1s; }
+        .btn-qty:active { transform: scale(0.95); opacity: 0.8; }
+        .btn-unit { background: #475569; }
+        .btn-floor { background: var(--primary); }
+        .layer-total-display { font-size: 1.1rem; font-weight: 900; color: var(--accent); background: #0f172a; padding: 8px; border-radius: 8px; text-align: center; min-width: 50px; }
+
         .footer-fixed {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px);
-            padding: 15px 15px 25px 15px; z-index: 1000; border-top: 1px solid #334155;
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+            padding: 15px; border-top: 1px solid #334155; z-index: 100;
         }
-        .piso-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
-        .btn-piso { padding: 15px 0; border: none; border-radius: 12px; font-weight: 900; color: white; font-size: 0.8rem; }
-        .plus { background: var(--primary); }
-        .minus { background: #475569; }
+        .status-summary { display: flex; justify-content: space-between; margin-bottom: 10px; background: #0f172a; padding: 10px; border-radius: 12px; border: 1px solid #334155; }
+        .status-summary div { text-align: center; flex: 1; }
+        .status-summary b { display: block; font-size: 1.2rem; }
         
-        .btn-archive {
-            width: 100%; padding: 18px; border-radius: 16px; border: none;
-            background: var(--success); color: white; font-weight: 900; font-size: 1.1rem;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
-        }
+        .action-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-main { padding: 15px; border-radius: 12px; border: none; font-weight: bold; color: white; cursor: pointer; font-size: 0.9rem; }
+        .btn-wa { background: #25d366; }
+        .btn-save { background: var(--success); }
     </style>
 </head>
 <body>
 
     <div class="global-header">
-        <h1>Panel de Auditoría</h1>
         <div class="stats-row">
-            <div>
-                <span>SUMA TOTAL RUTAS</span>
-                <b id="gTotal">0</b>
-            </div>
-            <div style="text-align: right;">
-                <span>RUTAS TRABAJADAS</span>
-                <b id="gActive">0 / 20</b>
-            </div>
+            <div><span>SUMA TOTAL CARGA</span><b id="gTotal">0</b></div>
+            <div style="text-align: right;"><span>RUTAS</span><b id="gActive">0/20</b></div>
         </div>
     </div>
 
     <div class="route-grid" id="routeGrid"></div>
 
     <div class="main-card">
+        <div class="timer-box">⏱ <span id="timer">00:00</span></div>
         <div class="input-group">
-            <div>
-                <label>ID Ruta / MOV</label>
-                <input type="text" id="rName" placeholder="000" oninput="sync()">
-            </div>
-            <div>
-                <label>Total Hoja</label>
-                <input type="number" id="rSheet" placeholder="0" oninput="sync()">
-            </div>
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <label>Presentación del Producto</label>
-            <select id="productSelect" onchange="changeProduct()">
-                <optgroup label="Refrescos">
-                    <option value="8">Refresco Botella 350ml (8 bultos/piso)</option>
-                    <option value="18">Refresco Lata 355ml (18 bultos/piso)</option>
-                    <option value="20">Refresco Pet 355ml (20 bultos/piso)</option>
-                    <option value="25">Refresco 1 Litro (25 bultos/piso)</option>
-                    <option value="21">Refresco 1.5 Litros (21 bultos/piso)</option>
-                    <option value="18">Refresco 2 Litros (18 bultos/piso)</option>
-                </optgroup>
-                <optgroup label="Nevada">
-                    <option value="19">Nevada Saborizada (19 bultos/piso)</option>
-                    <option value="20">Nevada Pet 355ml (20 bultos/piso)</option>
-                    <option value="15">Nevada Pet 600ml (15 bultos/piso)</option>
-                    <option value="25">Nevada 1.5 Litros (25 bultos/piso)</option>
-                    <option value="25">Nevada 5 Litros (25 bultos/piso)</option>
-                </optgroup>
-                <optgroup label="Fresh">
-                    <option value="28">Fresh 250ml (28 bultos/piso)</option>
-                    <option value="20">Fresh 500ml (20 bultos/piso)</option>
-                    <option value="21">Fresh 1.5 Litros (21 bultos/piso)</option>
-                </optgroup>
-                <option value="custom">-- Otro (Personalizado) --</option>
-            </select>
-            <div id="customDiv" style="display:none; margin-top:10px;">
-                <label>Bultos por Piso Manual</label>
-                <input type="number" id="customInput" value="24" oninput="render()">
-            </div>
-        </div>
-
-        <div class="status-banner" id="statusBanner">
-            <div><span>TOTAL REAL</span><b id="vReal">0</b></div>
-            <div><span>DIFERENCIA</span><b id="vDiff">0</b></div>
+            <div><label>ID RUTA / MOV</label><input type="text" id="rName" oninput="sync()"></div>
+            <div><label>TOTAL HOJA</label><input type="number" id="rSheet" oninput="sync()"></div>
         </div>
 
         <div id="palettesList"></div>
         
-        <button onclick="addPaleta()" style="width:100%; padding:15px; border:2px dashed var(--slate); background:none; color:var(--slate); border-radius:15px; margin-top:10px; font-weight:bold;">
-            + AGREGAR OTRA PALETA
+        <button onclick="addPalette()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; margin-top:10px;">
+            + NUEVA PALETA
         </button>
     </div>
 
     <div class="footer-fixed">
-        <div class="piso-controls">
-            <button class="btn-piso minus" onclick="mod(-getPiso(), true)" id="btnM">-PISO</button>
-            <button class="btn-piso minus" onclick="mod(-1)">-1</button>
-            <button class="btn-piso plus" onclick="mod(1)">+1</button>
-            <button class="btn-piso plus" onclick="mod(getPiso(), true)" id="btnP">+PISO</button>
+        <div class="status-summary">
+            <div><span>REAL</span><b id="vReal">0</b></div>
+            <div><span>DIFERENCIA</span><b id="vDiff">0</b></div>
         </div>
-        <button class="btn-archive" onclick="archive()">💾 ARCHIVAR REGISTRO</button>
+        <div class="action-btns">
+            <button class="btn-main btn-wa" onclick="shareWhatsApp()">💬 REPORTE WA</button>
+            <button class="btn-main btn-save" onclick="archive()">💾 ARCHIVAR</button>
+        </div>
     </div>
 
 <script>
     let rIdx = 0;
-    let pIdx = 0;
-    let rutas = Array.from({ length: 20 }, () => ({ name: "", sheet: 0, paletas: [0], base: 8 }));
+    const products = [
+        { n: "Ref. 350ml Botella", v: 8 },
+        { n: "Ref. 355ml Lata", v: 18 },
+        { n: "Ref. 355ml Pet", v: 20 },
+        { n: "Ref. 1 Litro", v: 25 },
+        { n: "Ref. 1.5 Litros", v: 21 },
+        { n: "Ref. 2 Litros", v: 18 },
+        { n: "Nevada Saborizada", v: 19 },
+        { n: "Nevada 355ml Pet", v: 20 },
+        { n: "Nevada 600ml Pet", v: 15 },
+        { n: "Nevada 1.5L / 5L", v: 25 },
+        { n: "Fresh 250ml", v: 28 },
+        { n: "Fresh 500ml", v: 20 },
+        { n: "Fresh 1.5L", v: 21 }
+    ];
 
-    function setup() {
+    let rutas = JSON.parse(localStorage.getItem('auditoria_v6')) || Array.from({ length: 20 }, () => ({
+        name: "", sheet: 0, time: 0, palettes: [{ layers: [{ prodIdx: 0, qty: 0 }] }]
+    }));
+
+    function init() {
         const grid = document.getElementById('routeGrid');
-        for(let i=0; i<20; i++){
+        for(let i=0; i<20; i++) {
             const b = document.createElement('button');
-            b.className = 'route-btn';
-            b.innerText = i + 1;
-            b.id = 'rb' + i;
+            b.className = 'route-btn'; b.innerText = i+1; b.id = 'rb'+i;
             b.onclick = () => selectRoute(i);
             grid.appendChild(b);
         }
         selectRoute(0);
+        setInterval(() => {
+            if(rutas[rIdx].name !== "") {
+                rutas[rIdx].time++;
+                updateTimer();
+                localStorage.setItem('auditoria_v6', JSON.stringify(rutas));
+            }
+        }, 1000);
     }
 
     function selectRoute(i) {
         rIdx = i;
-        pIdx = 0;
         document.getElementById('rName').value = rutas[rIdx].name;
         document.getElementById('rSheet').value = rutas[rIdx].sheet || "";
-        
-        const base = rutas[rIdx].base;
-        const select = document.getElementById('productSelect');
-        const customDiv = document.getElementById('customDiv');
-        
-        let found = false;
-        for(let opt of select.options) {
-            if(opt.value == base && opt.value !== 'custom') {
-                select.value = base;
-                found = true;
-                break;
-            }
-        }
-        
-        if(!found) {
-            select.value = 'custom';
-            customDiv.style.display = 'block';
-            document.getElementById('customInput').value = base;
-        } else {
-            customDiv.style.display = 'none';
-        }
-        
+        updateTimer();
         render();
     }
 
-    function changeProduct() {
-        const select = document.getElementById('productSelect');
-        const customDiv = document.getElementById('customDiv');
-        if(select.value === 'custom') {
-            customDiv.style.display = 'block';
-        } else {
-            customDiv.style.display = 'none';
-            rutas[rIdx].base = parseInt(select.value);
-        }
+    function updateTimer() {
+        const s = rutas[rIdx].time;
+        document.getElementById('timer').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+    }
+
+    function addPalette() {
+        rutas[rIdx].palettes.push({ layers: [{ prodIdx: 0, qty: 0 }] });
         render();
     }
 
-    function getPiso() {
-        const select = document.getElementById('productSelect');
-        if(select.value === 'custom') {
-            const val = parseInt(document.getElementById('customInput').value) || 1;
-            rutas[rIdx].base = val;
-            return val;
-        }
-        const val = parseInt(select.value);
-        rutas[rIdx].base = val;
-        return val;
+    function addLayer(pi) {
+        rutas[rIdx].palettes[pi].layers.push({ prodIdx: 0, qty: 0 });
+        render();
+    }
+
+    function removeLayer(pi, li) {
+        rutas[rIdx].palettes[pi].layers.splice(li, 1);
+        if(rutas[rIdx].palettes[pi].layers.length === 0) rutas[rIdx].palettes.splice(pi, 1);
+        render();
+    }
+
+    function updateQty(pi, li, n) {
+        const layer = rutas[rIdx].palettes[pi].layers[li];
+        layer.qty += n;
+        if(layer.qty < 0) layer.qty = 0;
+        render();
+    }
+
+    function clearHistory(pi, li) {
+        rutas[rIdx].palettes[pi].layers[li].qty = 0;
+        render();
+    }
+
+    function setProduct(pi, li, idx) {
+        rutas[rIdx].palettes[pi].layers[li].prodIdx = parseInt(idx);
+        render();
     }
 
     function sync() {
         rutas[rIdx].name = document.getElementById('rName').value;
         rutas[rIdx].sheet = parseInt(document.getElementById('rSheet').value) || 0;
-        render();
-    }
-
-    function addPaleta() {
-        rutas[rIdx].paletas.push(0);
-        pIdx = rutas[rIdx].paletas.length - 1;
-        render();
-    }
-
-    function setManual(pi, val) {
-        rutas[rIdx].paletas[pi] = parseInt(val) || 0;
-        render();
-    }
-
-    function mod(n, isPiso = false) {
-        rutas[rIdx].paletas[pIdx] += n;
-        if(rutas[rIdx].paletas[pIdx] < 0) rutas[rIdx].paletas[pIdx] = 0;
+        localStorage.setItem('auditoria_v6', JSON.stringify(rutas));
         render();
     }
 
     function render() {
-        const piso = getPiso();
-        let globalTotal = 0;
-        let activeCount = 0;
-
-        document.getElementById('btnM').innerText = `-${piso}`;
-        document.getElementById('btnP').innerText = `+${piso}`;
-
+        let gTotal = 0; let active = 0;
         rutas.forEach((r, i) => {
-            const total = r.paletas.reduce((a,b)=>a+b, 0);
-            globalTotal += total;
-            if(total > 0 || r.name !== "") activeCount++;
-            document.getElementById('rb' + i).className = `route-btn ${i === rIdx ? 'active' : (total > 0 || r.name !== "" ? 'has-data' : '')}`;
+            let rSum = 0;
+            r.palettes.forEach(p => p.layers.forEach(l => rSum += l.qty));
+            gTotal += rSum;
+            if(rSum > 0 || r.name !== "") active++;
+            document.getElementById('rb'+i).className = `route-btn ${i === rIdx ? 'active' : (rSum > 0 ? 'has-data' : '')}`;
         });
 
-        document.getElementById('gTotal').innerText = globalTotal;
-        document.getElementById('gActive').innerText = `${activeCount} / 20`;
+        document.getElementById('gTotal').innerText = gTotal;
+        document.getElementById('gActive').innerText = active + "/20";
 
         const list = document.getElementById('palettesList');
         list.innerHTML = "";
-        rutas[rIdx].paletas.forEach((val, i) => {
-            const div = document.createElement('div');
-            div.className = `palette-item ${i === pIdx ? 'selected' : ''}`;
-            div.onclick = () => { pIdx = i; render(); };
-            const fullPisos = Math.floor(val/piso);
-            const remainder = val % piso;
-            div.innerHTML = `
-                <div class="palette-header">
-                    <span style="color:var(--primary)">PALETA ${i+1}</span>
-                    <span style="color:var(--slate); font-size:0.75rem">${fullPisos} PISOS + ${remainder} BULTOS</span>
+        
+        rutas[rIdx].palettes.forEach((p, pi) => {
+            const pDiv = document.createElement('div');
+            pDiv.className = 'palette-container';
+            let pSum = 0;
+            p.layers.forEach(l => pSum += l.qty);
+
+            let layersHtml = p.layers.map((l, li) => {
+                const prod = products[l.prodIdx];
+                const floors = Math.floor(l.qty / prod.v);
+                const units = l.qty % prod.v;
+                
+                return `
+                <div class="layer-item">
+                    <div class="layer-controls-row">
+                        <select onchange="setProduct(${pi}, ${li}, this.value)">
+                            ${products.map((pr, idx) => `<option value="${idx}" ${l.prodIdx == idx ? 'selected' : ''}>${pr.n} (${pr.v})</option>`).join('')}
+                        </select>
+                        <div class="layer-total-display">${l.qty}</div>
+                        <button onclick="clearHistory(${pi}, ${li})" style="background:none; border:none; color:var(--slate); font-size:1rem; cursor:pointer;">🔄</button>
+                    </div>
+                    
+                    <div class="floor-track">
+                        <div>CONTEO:</div>
+                        <div><span>${floors}</span> PISOS + <span>${units}</span> UNI</div>
+                    </div>
+                    
+                    <div class="qty-controls">
+                        <button class="btn-qty btn-unit" onclick="updateQty(${pi}, ${li}, -1)">-1</button>
+                        <button class="btn-qty btn-unit" onclick="updateQty(${pi}, ${li}, 1)">+1</button>
+                        <button class="btn-qty btn-floor" onclick="updateQty(${pi}, ${li}, -${prod.v})">-${prod.v}</button>
+                        <button class="btn-qty btn-floor" onclick="updateQty(${pi}, ${li}, ${prod.v})">+${prod.v}</button>
+                    </div>
                 </div>
-                <div class="counter-box">
-                    <button class="btn-mini" onclick="event.stopPropagation(); pIdx=${i}; mod(-1)">-</button>
-                    <input type="number" class="val-input" value="${val}" 
-                           onclick="event.stopPropagation(); pIdx=${i}; render();"
-                           oninput="setManual(${i}, this.value)">
-                    <button class="btn-mini" onclick="event.stopPropagation(); pIdx=${i}; mod(1)">+</button>
-                </div>
+                `;
+            }).join('');
+
+            pDiv.innerHTML = `
+                <div class="palette-header"><b>PALETA ${pi+1}</b> <span>Total: ${pSum}</span></div>
+                ${layersHtml}
+                <button onclick="addLayer(${pi})" style="width:100%; background:none; border:1px dashed var(--slate); color:var(--slate); border-radius:10px; padding:10px; font-size:0.75rem; margin-top:5px; font-weight:bold;">+ AGREGAR OTRO PRODUCTO</button>
             `;
-            list.appendChild(div);
+            list.appendChild(pDiv);
         });
 
-        const rTotal = rutas[rIdx].paletas.reduce((a,b)=>a+b, 0);
-        const diff = rTotal - rutas[rIdx].sheet;
-        document.getElementById('vReal').innerText = rTotal;
+        let rReal = 0;
+        rutas[rIdx].palettes.forEach(p => p.layers.forEach(l => rReal += l.qty));
+        const diff = rReal - rutas[rIdx].sheet;
+        document.getElementById('vReal').innerText = rReal;
         document.getElementById('vDiff').innerText = (diff > 0 ? "+" : "") + diff;
         
-        const banner = document.getElementById('statusBanner');
-        if(rutas[rIdx].sheet === 0) banner.style.borderColor = "#334155";
-        else if(diff === 0) banner.style.borderColor = "var(--success)";
-        else banner.style.borderColor = "var(--danger)";
+        const summary = document.querySelector('.status-summary');
+        summary.style.borderColor = diff === 0 && rReal > 0 ? "var(--success)" : (diff !== 0 ? "var(--danger)" : "#334155");
+        
+        localStorage.setItem('auditoria_v6', JSON.stringify(rutas));
+    }
+
+    function shareWhatsApp() {
+        let r = rutas[rIdx];
+        if(!r.name) return alert("Ingrese ID de Ruta.");
+        let rReal = 0;
+        r.palettes.forEach(p => p.layers.forEach(l => rReal += l.qty));
+        let txt = `*🚀 REPORTE DE AUDITORÍA DE CARGA*\n*Ruta:* ${r.name}\n*Total Real:* ${rReal}\n*Hoja:* ${r.sheet}\n*Dif:* ${rReal - r.sheet}\n*Tiempo:* ${document.getElementById('timer').innerText}\n--------------------------\n`;
+        r.palettes.forEach((p, i) => {
+            let pSum = 0; 
+            txt += `*Paleta ${i+1}:*\n`;
+            p.layers.forEach(l => {
+                const prod = products[l.prodIdx];
+                const floors = Math.floor(l.qty / prod.v);
+                const units = l.qty % prod.v;
+                txt += `- ${prod.n}: ${l.qty} (${floors}P + ${units}U)\n`;
+                pSum += l.qty;
+            });
+            txt += `_Subtotal Paleta: ${pSum}_ \n\n`;
+        });
+        window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
     }
 
     function archive() {
-        const r = rutas[rIdx];
-        if(!r.name || r.sheet === 0) return alert("Complete el ID de Ruta y el Total de Hoja.");
-        const total = r.paletas.reduce((a,b)=>a+b, 0);
-        alert(`REGISTRO ARCHIVADO\n-------------------\nRuta: ${r.name}\nTotal: ${total}\nDiferencia: ${total-r.sheet}`);
-        rutas[rIdx] = { name: "", sheet: 0, paletas: [0], base: 8 };
-        selectRoute(rIdx);
+        alert("Ruta auditada y guardada con éxito.");
     }
 
-    window.onload = setup;
+    init();
 </script>
-
 </body>
 </html>
-
