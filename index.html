@@ -3,8 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Auditoría Pro - Conteo por Pisos y Unidades</title>
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Auditoría Pro PWA</title>
     
+    <link rel="manifest" href="data:application/json;base64,ewogICJnameIjogIkF1ZGl0b3LDrWEgUHJvIiwKICAic2hvcnRfbmFtZSI6ICJBdWRpdG9yw61hIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwZjE3MmEiLAogICJ0aGVtZV9jb2xvciI6ICIwZjE3MmEiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2Nkbi1pY29ucy1wbmcuZnJlZXBpay5jb20vNTEyLzk0MjIvOTQyMjM2OS5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=">
+
     <style>
         :root { 
             --primary: #2563eb; 
@@ -20,18 +25,27 @@
         body { 
             font-family: system-ui, -apple-system, sans-serif; 
             background: var(--bg); color: var(--text);
-            margin: 0; padding: 10px; padding-bottom: 240px;
+            margin: 0; padding: 10px; padding-bottom: 260px;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* Header & Stats */
         .global-header {
             background: linear-gradient(135deg, #1e40af, #1e293b);
             border-radius: 20px; padding: 15px; margin-bottom: 15px;
             border: 1px solid #3b82f6; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .stats-row { display: flex; justify-content: space-between; align-items: center; }
-        .stats-row b { font-size: 1.8rem; }
-        .stats-row span { font-size: 0.65rem; font-weight: bold; color: var(--slate); display: block; text-transform: uppercase; }
+        .stats-col span { font-size: 0.65rem; font-weight: bold; color: var(--slate); display: block; text-transform: uppercase; }
+        .stats-col b { font-size: 1.6rem; }
 
+        /* Tabs/Navigation */
+        .nav-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; border-radius: 12px; border: 1px solid #334155; background: var(--card); color: var(--slate); font-weight: bold; cursor: pointer; }
+        .tab-btn.active { background: var(--primary); color: white; border-color: #60a5fa; }
+
+        /* Grid de Rutas */
         .route-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 15px; }
         .route-btn {
             background: var(--card); border: 1px solid #334155; color: var(--slate);
@@ -40,27 +54,32 @@
         .route-btn.active { background: var(--primary); color: white; border-color: #60a5fa; }
         .route-btn.has-data { border-color: var(--accent); color: var(--accent); border-style: dashed; }
 
-        .main-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid #334155; }
-        .timer-box { font-family: monospace; color: var(--accent); background: #0f172a; padding: 4px 10px; border-radius: 6px; margin-bottom: 10px; display: inline-block; font-size: 0.85rem; border: 1px solid #475569; }
+        /* Secciones */
+        .view-section { display: none; }
+        .view-section.active { display: block; }
 
+        .main-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid #334155; margin-bottom: 15px; }
+        
+        /* Timer */
+        .timer-container { 
+            display: flex; align-items: center; gap: 10px; margin-bottom: 15px;
+            background: #0f172a; padding: 10px; border-radius: 12px; border: 1px solid #475569;
+        }
+        .timer-display { font-family: monospace; font-size: 1.4rem; color: var(--accent); font-weight: bold; flex-grow: 1; text-align: center; }
+        .timer-btn { width: 40px; height: 40px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
+
+        /* Inputs */
         .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         label { font-size: 0.65rem; color: var(--slate); font-weight: bold; margin-bottom: 3px; display: block; }
-        input[type="text"], input[type="number"] { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 10px; box-sizing: border-box; font-weight: bold; outline: none; }
+        input { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 10px; box-sizing: border-box; font-weight: bold; font-size: 1rem; }
 
-        .palette-container {
-            background: #111827; border-radius: 15px; padding: 12px; margin-bottom: 15px; border: 1px solid #334155;
-        }
-        .palette-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
-        .palette-header b { color: var(--primary); font-size: 0.9rem; }
+        /* Paletas y Capas */
+        .palette-container { background: #111827; border-radius: 15px; padding: 12px; margin-bottom: 15px; border: 1px solid #334155; }
+        .palette-header { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 5px; font-size: 0.9rem; }
+        .layer-item { background: #1e293b; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #334155; }
+        .layer-controls-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 8px; align-items: center; }
+        select { background: #0f172a; color: white; border: 1px solid #475569; padding: 10px; border-radius: 8px; font-size: 0.85rem; width: 100%; }
         
-        .layer-item {
-            background: #1e293b; padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #334155;
-        }
-        .layer-controls-row { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-bottom: 5px; align-items: center; }
-        
-        select { background: #0f172a; color: white; border: 1px solid #475569; padding: 8px; border-radius: 8px; font-size: 0.8rem; width: 100%; }
-        
-        /* Visualización de la suma por pisos */
         .floor-track {
             background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 6px; 
             font-weight: bold; font-size: 0.85rem; color: var(--text);
@@ -69,13 +88,19 @@
         }
         .floor-track span { color: var(--accent); }
 
-        .qty-controls { display: flex; gap: 5px; justify-content: space-between; margin-top: 8px; }
-        .btn-qty { flex: 1; padding: 10px 5px; border: none; border-radius: 8px; font-weight: bold; color: white; font-size: 0.7rem; cursor: pointer; transition: 0.1s; }
-        .btn-qty:active { transform: scale(0.95); opacity: 0.8; }
+        .qty-controls { display: grid; grid-template-columns: 1fr 1fr 1.5fr 1.5fr; gap: 5px; }
+        .btn-qty { padding: 12px 2px; border: none; border-radius: 8px; font-weight: bold; color: white; font-size: 0.75rem; cursor: pointer; }
         .btn-unit { background: #475569; }
         .btn-floor { background: var(--primary); }
         .layer-total-display { font-size: 1.1rem; font-weight: 900; color: var(--accent); background: #0f172a; padding: 8px; border-radius: 8px; text-align: center; min-width: 50px; }
 
+        /* Gestión de Inventario */
+        .inventory-list { margin-top: 15px; }
+        .product-card { background: #0f172a; border-radius: 12px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #334155; }
+        .product-info b { display: block; color: var(--text); }
+        .product-info span { font-size: 0.75rem; color: var(--slate); }
+
+        /* Footer */
         .footer-fixed {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
@@ -89,66 +114,88 @@
         .btn-main { padding: 15px; border-radius: 12px; border: none; font-weight: bold; color: white; cursor: pointer; font-size: 0.9rem; }
         .btn-wa { background: #25d366; }
         .btn-save { background: var(--success); }
+
+        .pwa-badge { background: var(--accent); color: var(--bg); padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; font-weight: 900; }
     </style>
 </head>
 <body>
 
     <div class="global-header">
-        <div class="stats-row">
-            <div><span>SUMA TOTAL CARGA</span><b id="gTotal">0</b></div>
-            <div style="text-align: right;"><span>RUTAS</span><b id="gActive">0/20</b></div>
+        <div class="stats-col"><span>CARGA TOTAL <span class="pwa-badge">PRO</span></span><b id="gTotal">0</b></div>
+        <div class="stats-col" style="text-align: right;"><span>AUDITADAS</span><b id="gActive">0/20</b></div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" id="btnAudit" onclick="setView('audit')">AUDITORÍA</button>
+        <button class="tab-btn" id="btnInventory" onclick="setView('inventory')">PRODUCTOS</button>
+    </div>
+
+    <!-- SECCIÓN AUDITORÍA -->
+    <div id="sectionAudit" class="view-section active">
+        <div class="route-grid" id="routeGrid"></div>
+        <div class="main-card">
+            <div class="timer-container">
+                <button class="timer-btn" style="background:var(--danger)" onclick="resetTimer()">↺</button>
+                <div class="timer-display" id="timer">00:00:00</div>
+                <button class="timer-btn" id="playPauseBtn" style="background:var(--success)" onclick="toggleTimer()">⏸</button>
+            </div>
+            <div class="input-group">
+                <div><label>ID RUTA / CAMIÓN</label><input type="text" id="rName" placeholder="R-001" oninput="sync()"></div>
+                <div><label>HOJA DE CARGA (UND)</label><input type="number" id="rSheet" placeholder="0" oninput="sync()"></div>
+            </div>
+            <div id="palettesList"></div>
+            <button onclick="addPalette()" style="width:100%; padding:18px; background:var(--primary); color:white; border:none; border-radius:15px; font-weight:bold; margin-top:10px; font-size: 1rem; box-shadow: 0 4px 12px rgba(37,99,235,0.3);">
+                + NUEVA PALETA
+            </button>
         </div>
     </div>
 
-    <div class="route-grid" id="routeGrid"></div>
-
-    <div class="main-card">
-        <div class="timer-box">⏱ <span id="timer">00:00</span></div>
-        <div class="input-group">
-            <div><label>ID RUTA / MOV</label><input type="text" id="rName" oninput="sync()"></div>
-            <div><label>TOTAL HOJA</label><input type="number" id="rSheet" oninput="sync()"></div>
+    <!-- SECCIÓN INVENTARIO -->
+    <div id="sectionInventory" class="view-section">
+        <div class="main-card">
+            <h3 style="margin-top:0; font-size:1rem; color:var(--accent)">NUEVO PRODUCTO</h3>
+            <div class="input-group">
+                <div style="grid-column: span 2;"><label>NOMBRE DEL PRODUCTO</label><input type="text" id="newProdName" placeholder="Ej: Pepsi 600ml"></div>
+                <div><label>UNIDADES POR PISO</label><input type="number" id="newProdValue" placeholder="20"></div>
+                <div style="display:flex; align-items:flex-end;"><button onclick="createNewProduct()" style="width:100%; padding:12px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold;">GUARDAR</button></div>
+            </div>
         </div>
-
-        <div id="palettesList"></div>
-        
-        <button onclick="addPalette()" style="width:100%; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold; margin-top:10px;">
-            + NUEVA PALETA
-        </button>
+        <div class="main-card">
+            <h3 style="margin-top:0; font-size:1rem; color:var(--slate)">BASE DE DATOS</h3>
+            <div id="inventoryContainer" class="inventory-list"></div>
+        </div>
     </div>
 
     <div class="footer-fixed">
         <div class="status-summary">
-            <div><span>REAL</span><b id="vReal">0</b></div>
+            <div><span>TOTAL REAL</span><b id="vReal">0</b></div>
             <div><span>DIFERENCIA</span><b id="vDiff">0</b></div>
         </div>
         <div class="action-btns">
             <button class="btn-main btn-wa" onclick="shareWhatsApp()">💬 REPORTE WA</button>
-            <button class="btn-main btn-save" onclick="archive()">💾 ARCHIVAR</button>
+            <button class="btn-main btn-save" onclick="archive()">💾 FINALIZAR</button>
         </div>
     </div>
 
 <script>
-    let rIdx = 0;
-    const products = [
-        { n: "Ref. 350ml Botella", v: 8 },
-        { n: "Ref. 355ml Lata", v: 18 },
-        { n: "Ref. 355ml Pet", v: 20 },
-        { n: "Ref. 1 Litro", v: 25 },
-        { n: "Ref. 1.5 Litros", v: 21 },
-        { n: "Ref. 2 Litros", v: 18 },
-        { n: "Nevada Saborizada", v: 19 },
-        { n: "Nevada 355ml Pet", v: 20 },
-        { n: "Nevada 600ml Pet", v: 15 },
-        { n: "Nevada 1.5L / 5L", v: 25 },
-        { n: "Fresh 250ml", v: 28 },
-        { n: "Fresh 500ml", v: 20 },
-        { n: "Fresh 1.5L", v: 21 }
+    // Configuración Inicial y Datos
+    let products = JSON.parse(localStorage.getItem('auditoria_db_products')) || [
+        { n: "Refrescos Botella 350ml", v: 8 },
+        { n: "Refrescos Lata 355ml", v: 18 },
+        { n: "Refrescos Pet 355ml", v: 20 },
+        { n: "Refrescos 1.5 Litros", v: 21 },
+        { n: "Nevada Pet 600ml", v: 15 }
     ];
 
-    let rutas = JSON.parse(localStorage.getItem('auditoria_v6')) || Array.from({ length: 20 }, () => ({
+    let rutas = JSON.parse(localStorage.getItem('auditoria_pwa_v2_data')) || Array.from({ length: 20 }, () => ({
         name: "", sheet: 0, time: 0, palettes: [{ layers: [{ prodIdx: 0, qty: 0 }] }]
     }));
 
+    let rIdx = 0;
+    let isPaused = false;
+    let timerInterval;
+
+    // Inicialización
     function init() {
         const grid = document.getElementById('routeGrid');
         for(let i=0; i<20; i++) {
@@ -158,26 +205,88 @@
             grid.appendChild(b);
         }
         selectRoute(0);
-        setInterval(() => {
-            if(rutas[rIdx].name !== "") {
+        
+        timerInterval = setInterval(() => {
+            if(!isPaused && rutas[rIdx].name !== "") {
                 rutas[rIdx].time++;
-                updateTimer();
-                localStorage.setItem('auditoria_v6', JSON.stringify(rutas));
+                updateTimerDisplay();
+                saveAll();
             }
         }, 1000);
     }
 
+    // Navegación
+    function setView(view) {
+        document.getElementById('sectionAudit').classList.toggle('active', view === 'audit');
+        document.getElementById('sectionInventory').classList.toggle('active', view === 'inventory');
+        document.getElementById('btnAudit').classList.toggle('active', view === 'audit');
+        document.getElementById('btnInventory').classList.toggle('active', view === 'inventory');
+        if(view === 'inventory') renderInventory();
+        else render();
+    }
+
+    // Gestión de Inventario
+    function createNewProduct() {
+        const name = document.getElementById('newProdName').value.trim();
+        const value = parseInt(document.getElementById('newProdValue').value);
+        if(name && value > 0) {
+            products.push({ n: name, v: value });
+            document.getElementById('newProdName').value = "";
+            document.getElementById('newProdValue').value = "";
+            localStorage.setItem('auditoria_db_products', JSON.stringify(products));
+            renderInventory();
+        } else {
+            alert("Complete el nombre y el valor de unidades por piso.");
+        }
+    }
+
+    function deleteProduct(idx) {
+        if(confirm(`¿Eliminar ${products[idx].n}?`)) {
+            products.splice(idx, 1);
+            localStorage.setItem('auditoria_db_products', JSON.stringify(products));
+            renderInventory();
+        }
+    }
+
+    function renderInventory() {
+        const container = document.getElementById('inventoryContainer');
+        container.innerHTML = products.map((p, i) => `
+            <div class="product-card">
+                <div class="product-info">
+                    <b>${p.n}</b>
+                    <span>${p.v} unidades por piso</span>
+                </div>
+                <button onclick="deleteProduct(${i})" style="background:none; border:none; color:var(--danger); font-size:1.2rem;">×</button>
+            </div>
+        `).join('');
+    }
+
+    // Lógica de Auditoría
     function selectRoute(i) {
         rIdx = i;
         document.getElementById('rName').value = rutas[rIdx].name;
         document.getElementById('rSheet').value = rutas[rIdx].sheet || "";
-        updateTimer();
+        updateTimerDisplay();
         render();
     }
 
-    function updateTimer() {
-        const s = rutas[rIdx].time;
-        document.getElementById('timer').innerText = `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+    function toggleTimer() {
+        isPaused = !isPaused;
+        const btn = document.getElementById('playPauseBtn');
+        btn.innerText = isPaused ? "▶" : "⏸";
+        btn.style.background = isPaused ? "var(--primary)" : "var(--success)";
+    }
+
+    function updateTimerDisplay() {
+        const t = rutas[rIdx].time;
+        const h = Math.floor(t / 3600).toString().padStart(2, '0');
+        const m = Math.floor((t % 3600) / 60).toString().padStart(2, '0');
+        const s = (t % 60).toString().padStart(2, '0');
+        document.getElementById('timer').innerText = `${h}:${m}:${s}`;
+    }
+
+    function resetTimer() {
+        if(confirm("¿Reiniciar tiempo?")) { rutas[rIdx].time = 0; updateTimerDisplay(); saveAll(); }
     }
 
     function addPalette() {
@@ -192,19 +301,16 @@
 
     function removeLayer(pi, li) {
         rutas[rIdx].palettes[pi].layers.splice(li, 1);
-        if(rutas[rIdx].palettes[pi].layers.length === 0) rutas[rIdx].palettes.splice(pi, 1);
+        if(rutas[rIdx].palettes[pi].layers.length === 0) {
+            if(rutas[rIdx].palettes.length > 1) rutas[rIdx].palettes.splice(pi, 1);
+            else rutas[rIdx].palettes[0].layers = [{ prodIdx: 0, qty: 0 }];
+        }
         render();
     }
 
     function updateQty(pi, li, n) {
         const layer = rutas[rIdx].palettes[pi].layers[li];
-        layer.qty += n;
-        if(layer.qty < 0) layer.qty = 0;
-        render();
-    }
-
-    function clearHistory(pi, li) {
-        rutas[rIdx].palettes[pi].layers[li].qty = 0;
+        layer.qty = Math.max(0, (layer.qty || 0) + n);
         render();
     }
 
@@ -216,22 +322,26 @@
     function sync() {
         rutas[rIdx].name = document.getElementById('rName').value;
         rutas[rIdx].sheet = parseInt(document.getElementById('rSheet').value) || 0;
-        localStorage.setItem('auditoria_v6', JSON.stringify(rutas));
+        saveAll();
         render();
     }
 
+    function saveAll() {
+        localStorage.setItem('auditoria_pwa_v2_data', JSON.stringify(rutas));
+    }
+
     function render() {
-        let gTotal = 0; let active = 0;
+        let gTotal = 0; let activeCount = 0;
         rutas.forEach((r, i) => {
             let rSum = 0;
-            r.palettes.forEach(p => p.layers.forEach(l => rSum += l.qty));
+            r.palettes.forEach(p => p.layers.forEach(l => rSum += (l.qty || 0)));
             gTotal += rSum;
-            if(rSum > 0 || r.name !== "") active++;
+            if(rSum > 0 || r.name !== "") activeCount++;
             document.getElementById('rb'+i).className = `route-btn ${i === rIdx ? 'active' : (rSum > 0 ? 'has-data' : '')}`;
         });
 
         document.getElementById('gTotal').innerText = gTotal;
-        document.getElementById('gActive').innerText = active + "/20";
+        document.getElementById('gActive').innerText = activeCount + "/20";
 
         const list = document.getElementById('palettesList');
         list.innerHTML = "";
@@ -240,10 +350,10 @@
             const pDiv = document.createElement('div');
             pDiv.className = 'palette-container';
             let pSum = 0;
-            p.layers.forEach(l => pSum += l.qty);
+            p.layers.forEach(l => pSum += (l.qty || 0));
 
             let layersHtml = p.layers.map((l, li) => {
-                const prod = products[l.prodIdx];
+                const prod = products[l.prodIdx] || { n: "N/A", v: 1 };
                 const floors = Math.floor(l.qty / prod.v);
                 const units = l.qty % prod.v;
                 
@@ -251,17 +361,15 @@
                 <div class="layer-item">
                     <div class="layer-controls-row">
                         <select onchange="setProduct(${pi}, ${li}, this.value)">
-                            ${products.map((pr, idx) => `<option value="${idx}" ${l.prodIdx == idx ? 'selected' : ''}>${pr.n} (${pr.v})</option>`).join('')}
+                            ${products.map((pr, idx) => `<option value="${idx}" ${l.prodIdx == idx ? 'selected' : ''}>${pr.n} (P=${pr.v})</option>`).join('')}
                         </select>
                         <div class="layer-total-display">${l.qty}</div>
-                        <button onclick="clearHistory(${pi}, ${li})" style="background:none; border:none; color:var(--slate); font-size:1rem; cursor:pointer;">🔄</button>
+                        <button onclick="removeLayer(${pi}, ${li})" style="background:none; border:none; color:var(--danger); font-size:1.4rem;">×</button>
                     </div>
-                    
                     <div class="floor-track">
-                        <div>CONTEO:</div>
-                        <div><span>${floors}</span> PISOS + <span>${units}</span> UNI</div>
+                        <div>COMPOSICIÓN: <span>${floors}</span> PISOS + <span>${units}</span> U</div>
+                        <div style="font-size:0.7rem; color:var(--slate)">PISO = ${prod.v}</div>
                     </div>
-                    
                     <div class="qty-controls">
                         <button class="btn-qty btn-unit" onclick="updateQty(${pi}, ${li}, -1)">-1</button>
                         <button class="btn-qty btn-unit" onclick="updateQty(${pi}, ${li}, 1)">+1</button>
@@ -273,48 +381,44 @@
             }).join('');
 
             pDiv.innerHTML = `
-                <div class="palette-header"><b>PALETA ${pi+1}</b> <span>Total: ${pSum}</span></div>
+                <div class="palette-header"><b>📦 PALETA #${pi+1}</b> <span>Suma: ${pSum}</span></div>
                 ${layersHtml}
-                <button onclick="addLayer(${pi})" style="width:100%; background:none; border:1px dashed var(--slate); color:var(--slate); border-radius:10px; padding:10px; font-size:0.75rem; margin-top:5px; font-weight:bold;">+ AGREGAR OTRO PRODUCTO</button>
+                <button onclick="addLayer(${pi})" style="width:100%; background:rgba(255,255,255,0.05); border:1px dashed var(--slate); color:var(--slate); border-radius:10px; padding:10px; font-size:0.75rem; font-weight:bold; margin-top:5px;">+ COMBINAR PRODUCTO</button>
             `;
             list.appendChild(pDiv);
         });
 
         let rReal = 0;
-        rutas[rIdx].palettes.forEach(p => p.layers.forEach(l => rReal += l.qty));
+        rutas[rIdx].palettes.forEach(p => p.layers.forEach(l => rReal += (l.qty || 0)));
         const diff = rReal - rutas[rIdx].sheet;
         document.getElementById('vReal').innerText = rReal;
         document.getElementById('vDiff').innerText = (diff > 0 ? "+" : "") + diff;
-        
-        const summary = document.querySelector('.status-summary');
-        summary.style.borderColor = diff === 0 && rReal > 0 ? "var(--success)" : (diff !== 0 ? "var(--danger)" : "#334155");
-        
-        localStorage.setItem('auditoria_v6', JSON.stringify(rutas));
+        document.querySelector('.status-summary').style.borderColor = diff === 0 && rReal > 0 ? "var(--success)" : (diff !== 0 ? "var(--danger)" : "#334155");
+        saveAll();
     }
 
     function shareWhatsApp() {
         let r = rutas[rIdx];
         if(!r.name) return alert("Ingrese ID de Ruta.");
         let rReal = 0;
-        r.palettes.forEach(p => p.layers.forEach(l => rReal += l.qty));
-        let txt = `*🚀 REPORTE DE AUDITORÍA DE CARGA*\n*Ruta:* ${r.name}\n*Total Real:* ${rReal}\n*Hoja:* ${r.sheet}\n*Dif:* ${rReal - r.sheet}\n*Tiempo:* ${document.getElementById('timer').innerText}\n--------------------------\n`;
+        r.palettes.forEach(p => p.layers.forEach(l => rReal += (l.qty || 0)));
+        let txt = `*📦 REPORTE DE AUDITORÍA*\n*Ruta:* ${r.name}\n*Total Real:* ${rReal}\n*Hoja:* ${r.sheet}\n*Dif:* ${rReal - r.sheet}\n*Tiempo:* ${document.getElementById('timer').innerText}\n--------------------------\n`;
         r.palettes.forEach((p, i) => {
-            let pSum = 0; 
-            txt += `*Paleta ${i+1}:*\n`;
-            p.layers.forEach(l => {
-                const prod = products[l.prodIdx];
-                const floors = Math.floor(l.qty / prod.v);
-                const units = l.qty % prod.v;
-                txt += `- ${prod.n}: ${l.qty} (${floors}P + ${units}U)\n`;
-                pSum += l.qty;
-            });
-            txt += `_Subtotal Paleta: ${pSum}_ \n\n`;
+            let pSum = 0; p.layers.forEach(l => pSum += (l.qty || 0));
+            if(pSum > 0) {
+                txt += `*Paleta ${i+1}* (Total: ${pSum}):\n`;
+                p.layers.forEach(l => {
+                    const prod = products[l.prodIdx];
+                    if(l.qty > 0) txt += `- ${prod.n}: ${l.qty} (${Math.floor(l.qty/prod.v)}P + ${l.qty%prod.v}U)\n`;
+                });
+                txt += `\n`;
+            }
         });
         window.open(`https://wa.me/?text=${encodeURIComponent(txt)}`);
     }
 
     function archive() {
-        alert("Ruta auditada y guardada con éxito.");
+        if(confirm("¿Finalizar auditoría? Se pausará el tiempo.")) isPaused = true;
     }
 
     init();
